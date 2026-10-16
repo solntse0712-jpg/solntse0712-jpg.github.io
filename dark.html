@@ -892,7 +892,7 @@ img{max-width:100%}</style>
     if (tg) tg.href = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text);
     if (wa) wa.href = 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + url);
     var nb = document.getElementById('shNative');
-    if (nb && navigator.share) {
+    if (nb && navigator.share && window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
       nb.hidden = false;
       nb.addEventListener('click', function () { navigator.share({ title: 'SVG Massage', text: text, url: url }).catch(function () {}); });
     }
