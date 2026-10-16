@@ -885,6 +885,27 @@ section, main > section, #contacts, #reviews, #faq { scroll-margin-top: 0 !impor
 .sharerow .chip:hover { background: var(--accent); color: var(--on-accent); }
 [hidden] { display: none !important; }
 img{max-width:100%}.mins{color:var(--muted);font-size:.88em;white-space:nowrap}
+
+/* мобильные улучшения (только ≤860px) */
+@media (max-width: 860px) {
+  .top-in { min-height: 50px; }
+  nav { gap: 6px; padding: 0; -webkit-overflow-scrolling: touch; scroll-snap-type: none; }
+  nav a { padding: 12px 8px; font-size: 14px; position: relative; flex: none; }
+  nav a.on { color: var(--accent); }
+  nav a.on::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 5px; height: 2px; background: var(--accent); border-radius: 2px; }
+  nav.more { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); }
+  nav.more.lft { -webkit-mask-image: linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 44px), transparent); }
+  nav.lft:not(.more) { -webkit-mask-image: linear-gradient(90deg, transparent, #000 36px); mask-image: linear-gradient(90deg, transparent, #000 36px); }
+  .cbox .btns { display: grid; grid-template-columns: 1fr 1fr; justify-content: stretch; }
+  .cbox .btns .btn { text-align: center; justify-content: center; }
+  .cbox .btns .btn.main { grid-column: 1 / -1; }
+  .cbox .phone-row { flex-wrap: wrap; justify-content: center; border-radius: 28px; padding: 12px; gap: 10px; }
+  .cbox .phone-row span { flex: 1 1 100%; text-align: center; white-space: nowrap; font-size: 22px; }
+  .cbox .phone-row .copy { flex: 1 1 100%; }
+  .copy { padding: 15px 14px; }
+  .sharerow .chip { min-height: 44px; }
+  .snav, .snav { width: 44px; height: 44px; }
+}
 </style>
 </head>
 <body>
@@ -1372,6 +1393,32 @@ img{max-width:100%}.mins{color:var(--muted);font-size:.88em;white-space:nowrap}
       try { navigator.clipboard.writeText(t).then(done, function () { pick(b); }); } catch (err) { pick(b); }
     });
   });
+})();
+
+(function () {
+  var nav = document.querySelector('header.top nav'); if (!nav) return;
+  var links = [].slice.call(nav.querySelectorAll('a'));
+  var secs = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  function edges() {
+    nav.classList.toggle('more', nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 4);
+    nav.classList.toggle('lft', nav.scrollLeft > 4);
+  }
+  var cur = null;
+  function upd() {
+    var hh = document.querySelector('header.top').offsetHeight, k = -1;
+    secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top <= hh + 40) k = i; });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) k = links.length - 1;
+    if (k === cur) return; cur = k;
+    links.forEach(function (a, i) { a.classList.toggle('on', i === k); });
+    if (k >= 0 && nav.scrollWidth > nav.clientWidth) {
+      var a = links[k];
+      nav.scrollTo({ left: a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2, behavior: 'smooth' });
+    }
+  }
+  nav.addEventListener('scroll', edges, { passive: true });
+  window.addEventListener('scroll', upd, { passive: true });
+  window.addEventListener('resize', function () { edges(); upd(); });
+  edges(); upd(); setTimeout(edges, 600);
 })();
 </script>
 </body>
