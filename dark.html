@@ -3,6 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Массаж в Москве: коворкинг у метро Ясенево и Сокольники, выезд по Москве и Подмосковью. Запись в Telegram и WhatsApp.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SVG Massage">
+<meta property="og:title" content="SVG Massage — массаж у Светланы">
+<meta property="og:description" content="Массаж в Москве: коворкинг у метро Ясенево и Сокольники, выезд по Москве и Подмосковью. Запись в Telegram и WhatsApp.">
+<meta property="og:url" content="https://solntse0712-jpg.github.io/dark.html">
+<meta property="og:image" content="https://solntse0712-jpg.github.io/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://solntse0712-jpg.github.io/preview.jpg">
 <title>Массаж Светлана Тёмная</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;600&family=Tenor+Sans&display=swap">
@@ -416,7 +428,12 @@ html { scroll-padding-top: var(--hh, 65px); }
 .portrait { max-width: 440px; }
 /* якорь: отступ задаёт только scroll-padding-top у html */
 section, main > section, #contacts, #reviews, #faq { scroll-margin-top: 0 !important; }
-img{max-width:100%}[hidden]{display:none!important}</style>
+
+.sharerow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 10px; margin: 16px 0 0; font-size: 14px; color: var(--muted); }
+.sharerow .chip { display: inline-flex; align-items: center; min-height: 38px; padding: 0 16px; border: 1px solid var(--accent); border-radius: 999px; background: transparent; color: var(--accent); font: 600 12px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+.sharerow .chip:hover { background: var(--accent); color: var(--on-accent); }
+[hidden] { display: none !important; }
+img{max-width:100%}</style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="lotus" viewBox="0 0 64 40">
@@ -768,6 +785,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
         <a class="btn" href="https://www.avito.ru/moskva/predlozheniya_uslug/massazh_sportivnyyrasslablyayuschiy_7238791266" target="_blank" rel="noopener">Авито</a>
       </div>
       <div class="phone-row"><span>+7-900-158-55-22</span><button class="copy" type="button" data-copy="+7-900-158-55-22">Копировать</button></div>
+      <div class="sharerow"><span>Поделиться сайтом:</span><button type="button" class="chip" id="shNative" hidden>Отправить</button><a class="chip" id="shTg" href="#" target="_blank" rel="noopener">Telegram</a><a class="chip" id="shWa" href="#" target="_blank" rel="noopener">WhatsApp</a><button type="button" class="chip" id="shCopy">Скопировать ссылку</button></div>
       <ol class="steps2">
         <li><em>1</em><b>Напишите или позвоните</b><span>В Telegram, WhatsApp или по телефону</span></li>
         <li><em>2</em><b>Подберём время</b><span>Вид массажа, длительность и время в часы приёма</span></li>
@@ -865,6 +883,31 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   [150, 500, 1200, 2500, 5000].forEach(function (t) { setTimeout(fit, t); });
   document.addEventListener('visibilitychange', fit);
   document.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', fit); });
+
+  (function () {
+    var CANON = 'https://solntse0712-jpg.github.io/';
+    var url = /^https?:/.test(location.href) && location.hostname.indexOf('claude') < 0 ? location.href.split('#')[0] : CANON;
+    var text = 'Массаж у Светланы, SVG Massage: Ясенево, Сокольники, выезд по Москве и Подмосковью';
+    var tg = document.getElementById('shTg'), wa = document.getElementById('shWa');
+    if (tg) tg.href = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text);
+    if (wa) wa.href = 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + url);
+    var nb = document.getElementById('shNative');
+    if (nb && navigator.share) {
+      nb.hidden = false;
+      nb.addEventListener('click', function () { navigator.share({ title: 'SVG Massage', text: text, url: url }).catch(function () {}); });
+    }
+    var cb = document.getElementById('shCopy');
+    if (cb) cb.addEventListener('click', function () {
+      var done = function () { cb.textContent = 'Ссылка скопирована'; setTimeout(function () { cb.textContent = 'Скопировать ссылку'; }, 1800); };
+      var legacy = function () {
+        try {
+          var ta = document.createElement('textarea'); ta.value = url; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+        } catch (e) { cb.textContent = url; }
+      };
+      try { navigator.clipboard.writeText(url).then(done, legacy); } catch (e) { legacy(); }
+    });
+  })();
   document.querySelectorAll('.copy').forEach(function (b) {
     b.addEventListener('click', function () {
       var t = b.getAttribute('data-copy');
