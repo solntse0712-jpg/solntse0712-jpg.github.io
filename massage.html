@@ -906,6 +906,21 @@ img{max-width:100%}.mins{color:var(--muted);font-size:.88em;white-space:nowrap}
   .sharerow .chip { min-height: 44px; }
   .snav, .snav { width: 44px; height: 44px; }
 }
+
+/* всплывающий призыв про сертификат */
+.xp { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(8,6,4,.72); }
+.xp.open { display: flex; animation: xpf .25s ease; }
+@keyframes xpf { from { opacity: 0; } to { opacity: 1; } }
+.xp-box { position: relative; width: min(440px, 100%); max-height: calc(100vh - 32px); overflow: auto; text-align: center; background: var(--surface); border: 1px solid var(--accent); padding: 34px 26px 26px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.xp-box::before { content: ""; position: absolute; inset: 6px; border: 1px solid var(--line); pointer-events: none; }
+.xp-x { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border: 0; background: transparent; color: var(--muted); font: 400 28px/1 var(--font-display); cursor: pointer; }
+.xp-x:hover { color: var(--accent); }
+.xp-eb { margin: 0 0 10px; font: 600 11px/1.2 var(--font-body); letter-spacing: .22em; text-transform: uppercase; color: var(--accent); }
+.xp-box h2 { margin: 0 0 12px; font: 400 28px/1.15 var(--font-display); }
+.xp-box p.xp-t { margin: 0 0 20px; color: var(--muted); line-height: 1.55; }
+.xp-box .btn { display: flex; justify-content: center; width: 100%; margin: 0 0 10px; }
+.xp-no { display: inline-block; margin-top: 4px; padding: 10px; border: 0; background: none; color: var(--muted); font: 400 13px/1 var(--font-body); text-decoration: underline; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .xp.open { animation: none; } }
 </style>
 </head>
 <body>
@@ -1284,6 +1299,18 @@ img{max-width:100%}.mins{color:var(--muted);font-size:.88em;white-space:nowrap}
   <a href="https://wa.me/79001585522" target="_blank" rel="noopener">WhatsApp</a>
 </nav>
 
+<div class="xp" id="xp" role="dialog" aria-modal="true" aria-labelledby="xpT" hidden>
+  <div class="xp-box">
+    <button type="button" class="xp-x" id="xpX" aria-label="Закрыть">×</button>
+    <p class="xp-eb">Скоро праздники</p>
+    <h2 id="xpT">Подарите тепло и заботу тем, кого любите</h2>
+    <p class="xp-t">Подарочный сертификат на массаж: красивый подарок, который не нужно искать в магазине. Получатель сам выберет время и вид массажа. Успейте заказать к празднику!</p>
+    <a class="btn main" id="xpGo" href="https://t.me/SVG_MASSAGES?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D0%BF%D0%BE%D0%B4%D0%B0%D1%80%D0%BE%D1%87%D0%BD%D1%8B%D0%B9%20%D1%81%D0%B5%D1%80%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%82" target="_blank" rel="noopener">Заказать сертификат</a>
+    <a class="btn" id="xpSee" href="#gift">Посмотреть сертификаты</a>
+    <button type="button" class="xp-no" id="xpNo">Нет, спасибо</button>
+  </div>
+</div>
+
 <div class="lightbox" id="lightbox" hidden><img id="lbimg" src="" alt="Фото крупно"><button type="button" class="lbn prev" id="lbprev" aria-label="Назад">&#8249;</button><button type="button" class="lbn next" id="lbnext" aria-label="Вперёд">&#8250;</button><div class="lbcount" id="lbcount"></div></div>
 
 <script>
@@ -1419,6 +1446,53 @@ img{max-width:100%}.mins{color:var(--muted);font-size:.88em;white-space:nowrap}
   window.addEventListener('scroll', upd, { passive: true });
   window.addEventListener('resize', function () { edges(); upd(); });
   edges(); upd(); setTimeout(edges, 600);
+})();
+
+(function () {
+  var box = document.getElementById('xp'); if (!box) return;
+  var KEY = 'svgXp', shown = false, t0 = Date.now(), last = null;
+  function seen() { try { var v = localStorage.getItem(KEY); return v && Date.now() - +v < 7 * 864e5; } catch (e) { return false; } }
+  function mark() { try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {} }
+  if (seen()) return;
+  function open() {
+    if (shown) return;
+    var lb = document.getElementById('lightbox'); if (lb && !lb.hidden) return;
+    var g = document.getElementById('gift'), c = document.getElementById('contacts'), vh = innerHeight;
+    function inView(s) { if (!s) return false; var r = s.getBoundingClientRect(); return r.top < vh * .6 && r.bottom > vh * .4; }
+    if (inView(g) || inView(c)) return;
+    shown = true; mark(); last = document.activeElement;
+    box.hidden = false; box.classList.add('open');
+    document.getElementById('xpGo').focus({ preventScroll: true });
+  }
+  function close() { box.classList.remove('open'); box.hidden = true; if (last && last.focus) try { last.focus({ preventScroll: true }); } catch (e) {} }
+  document.getElementById('xpX').addEventListener('click', close);
+  document.getElementById('xpNo').addEventListener('click', close);
+  document.getElementById('xpGo').addEventListener('click', function () { close(); });
+  document.getElementById('xpSee').addEventListener('click', function (e) {
+    e.preventDefault(); close();
+    var g = document.getElementById('gift'); if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  box.addEventListener('click', function (e) { if (e.target === box) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && box.classList.contains('open')) close(); });
+  // компьютер: курсор уходит вверх к вкладкам/крестику
+  var fine = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (fine) {
+    document.addEventListener('mouseout', function (e) {
+      if (!e.relatedTarget && e.clientY <= 0 && Date.now() - t0 > 6000) open();
+    });
+  } else {
+    // телефон: после 40 секунд на сайте, когда человек листает вверх
+    var y = scrollY;
+    addEventListener('scroll', function () {
+      var up = scrollY < y - 60; if (Math.abs(scrollY - y) > 60) y = scrollY;
+      if (up && Date.now() - t0 > 40000) open();
+    }, { passive: true });
+  }
+  // не показывать тем, кто уже нажал на связь
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="https://t.me"],a[href^="https://wa.me"],a[href^="tel:"]');
+    if (a && !box.contains(a)) { shown = true; mark(); }
+  });
 })();
 </script>
 </body>
